@@ -1,9 +1,8 @@
+import org.intel.openvino.*;
+
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
-import java.util.ArrayList;
-
-import org.intel.openvino.*;
-import org.intel.openvino.InferenceEngineProfileInfo.LayerStatus;
 
 public class InferRequestTests extends IETest {
     IECore core;
@@ -21,7 +20,7 @@ public class InferRequestTests extends IETest {
         completionCallback = false;
     }
 
-    public void testGetPerformanceCounts(){   
+    public void testGetPerformanceCounts() {
         inferRequest.Infer();
 
         Vector<String> layer_name = new Vector<>();
@@ -53,14 +52,15 @@ public class InferRequestTests extends IETest {
         assertEquals("Map size", layer_name.size(), res.size());
         ArrayList<String> resKeySet = new ArrayList<String>(res.keySet());
 
-        for (int i = 0; i < res.size(); i++){
-            String key  = resKeySet.get(i);
+        for (int i = 0; i < res.size(); i++) {
+            String key = resKeySet.get(i);
             InferenceEngineProfileInfo resVal = res.get(key);
 
             assertEquals(key + " execType", key, layer_name.elementAt(i));
             assertEquals(key + " executionIndex", i, resVal.executionIndex);
-            assertTrue(resVal.status == InferenceEngineProfileInfo.LayerStatus.EXECUTED
-                        || resVal.status == InferenceEngineProfileInfo.LayerStatus.NOT_RUN);
+            assertTrue(
+                    resVal.status == InferenceEngineProfileInfo.LayerStatus.EXECUTED
+                            || resVal.status == InferenceEngineProfileInfo.LayerStatus.NOT_RUN);
         }
     }
 
@@ -72,20 +72,21 @@ public class InferRequestTests extends IETest {
     }
 
     public void testSetCompletionCallback() {
-        inferRequest.SetCompletionCallback(new Runnable(){
+        inferRequest.SetCompletionCallback(
+                new Runnable() {
 
-            @Override
-            public void run() {
-                completionCallback = true;
-            }
-        });
+                    @Override
+                    public void run() {
+                        completionCallback = true;
+                    }
+                });
 
-        for(int i = 0; i < 5; i++) {
-            inferRequest.Wait(WaitMode.RESULT_READY); 
+        for (int i = 0; i < 5; i++) {
+            inferRequest.Wait(WaitMode.RESULT_READY);
             inferRequest.StartAsync();
-        } 
-        
-        inferRequest.Wait(WaitMode.RESULT_READY); 
+        }
+
+        inferRequest.Wait(WaitMode.RESULT_READY);
         inferRequest.StartAsync();
         StatusCode statusCode = inferRequest.Wait(WaitMode.RESULT_READY);
 
