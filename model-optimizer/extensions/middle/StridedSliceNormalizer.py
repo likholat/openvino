@@ -227,7 +227,7 @@ class StridedSliceNormalizer(MiddleReplacementPattern):
             if strides is None:
                 raise Error('StridedSlice operation for node {} supports only constant strides input'.format(node_name))
         else:
-            strides = np.ones(slice_rank)
+            strides = np.ones(slice_rank, dtype=np.int32)
 
         num_ellipsis_inserts = len(data_shape) - slice_rank + np.count_nonzero(node.new_axis_mask) + 1
         res_slices = []
