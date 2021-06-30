@@ -408,6 +408,50 @@ StatusCode CNNNetworkImpl::serialize(const std::string& xmlPath, const std::stri
     return DescriptionBuffer(NOT_IMPLEMENTED, resp) << "The CNNNetworkImpl::serialize is not implemented";
 }
 
+
+StatusCode CNNNetworkImpl::serialize(std::ostream& xmlBuf, std::ostream& binBuf, ResponseDesc* resp) const
+    noexcept {
+    try {
+#ifdef ENABLE_V7_SERIALIZE
+        IE_SUPPRESS_DEPRECATED_START
+        Serialization::Serialize(xmlBuf, binBuf, CNNNetwork(
+            std::const_pointer_cast<ICNNNetwork>(shared_from_this())));
+        IE_SUPPRESS_DEPRECATED_END
+        return OK;
+#endif
+    } catch (const Exception& e) {
+        return DescriptionBuffer(GENERAL_ERROR, resp) << e.what();
+    } catch (const std::exception& e) {
+        return DescriptionBuffer(UNEXPECTED, resp) << e.what();
+    } catch (...) {
+        return DescriptionBuffer(UNEXPECTED, resp);
+    }
+
+    return DescriptionBuffer(NOT_IMPLEMENTED, resp) << "The CNNNetworkImpl::serialize is not implemented";
+}
+
+StatusCode CNNNetworkImpl::serialize(std::ostream& xmlBuf, Blob::Ptr& binBlob, ResponseDesc* resp) const
+    noexcept {
+    try {
+#ifdef ENABLE_V7_SERIALIZE
+        IE_SUPPRESS_DEPRECATED_START
+        std::stringstream binBuf;
+        Serialization::Serialize(xmlBuf, binBuf, CNNNetwork(
+            std::const_pointer_cast<ICNNNetwork>(shared_from_this())));
+        IE_SUPPRESS_DEPRECATED_END
+        return OK;
+#endif
+    } catch (const Exception& e) {
+        return DescriptionBuffer(GENERAL_ERROR, resp) << e.what();
+    } catch (const std::exception& e) {
+        return DescriptionBuffer(UNEXPECTED, resp) << e.what();
+    } catch (...) {
+        return DescriptionBuffer(UNEXPECTED, resp);
+    }
+
+    return DescriptionBuffer(NOT_IMPLEMENTED, resp) << "The CNNNetworkImpl::serialize is not implemented";
+}
+
 StatusCode CNNNetworkImpl::setBatchSize(size_t size, ResponseDesc* responseDesc) noexcept {
     try {
         auto originalBatchSize = getBatchSize();
