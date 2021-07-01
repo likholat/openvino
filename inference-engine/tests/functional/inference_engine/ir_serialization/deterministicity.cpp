@@ -124,3 +124,21 @@ TEST_F(SerializationDeterministicityTest, ModelWithConstants) {
     ASSERT_TRUE(files_equal(xml_1, xml_2));
     ASSERT_TRUE(files_equal(bin_1, bin_2));
 }
+
+TEST_F(SerializationDeterministicityTest, SerializeToMemory) {
+    const std::string model =
+        IR_SERIALIZATION_MODELS_PATH "add_abc_initializers.xml";
+    const std::string weights =
+        IR_SERIALIZATION_MODELS_PATH "add_abc_initializers.bin";
+
+    std::stringstream m_out_xml_buf;
+    InferenceEngine::Blob::Ptr m_out_bin_buf;
+
+    InferenceEngine::Core ie;
+    auto expected = ie.ReadNetwork(model, weights);
+    expected.serialize(m_out_xml_buf, m_out_bin_buf);
+    auto result = ie.ReadNetwork(m_out_xml_buf.str(), m_out_bin_buf);
+
+    ASSERT_TRUE(expected.layerCount() == result.layerCount());
+    ASSERT_TRUE(expected.getInputShapes() == result.getInputShapes());
+}
